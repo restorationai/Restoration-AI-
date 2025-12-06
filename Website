@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Receptionist & Dispatch Systems built specifically for Restoration Companies. Automated dispatch, CRM, and review generation.">
+    <title>Restoration AI - Automated Dispatch & Marketing</title>
+    
+    <!-- Fonts: Inter & Outfit for a modern SaaS look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config for Custom Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'Inter', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#020617', /* Slate 950 */
+                            mid: '#0f172a',  /* Slate 900 */
+                            card: '#1e293b', /* Slate 800 */
+                            accent: '#0ea5e9', /* Sky 500 */
+                            neon: '#00e1ff', /* Cyan Neon */
+                            purple: '#6366f1', /* Indigo */
+                            light: '#f8fafc',
+                        }
+                    },
+                    boxShadow: {
+                        'glow-sm': '0 0 10px rgba(14, 165, 233, 0.3)',
+                        'glow-md': '0 0 20px rgba(14, 165, 233, 0.4)',
+                        'neon': '0 0 15px rgba(0, 225, 255, 0.4), 0 0 5px rgba(0, 225, 255, 0.8)',
+                        'neon-green': '0 0 15px rgba(34, 197, 94, 0.6), 0 0 5px rgba(34, 197, 94, 0.9)',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'scan': 'scan 4s linear infinite',
+                        'spin-slow': 'spin 8s linear infinite',
+                        'wave': 'wave 1.2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        scan: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(100%)' },
+                        },
+                        wave: {
+                            '0%, 100%': { height: '10%' },
+                            '50%': { height: '100%' },
+                        }
+                    },
+                    backgroundImage: {
+                        'gradient-conic': 'conic-gradient(var(--tw-gradient-stops))',
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Utilities */
+        .bg-grid-pattern {
+            background-image: linear-gradient(rgba(30, 41, 59, 0.5) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(30, 41, 59, 0.5) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        
+        /* Details/Summary Animation */
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] summary ~ * { animation: sweep .3s ease-in-out; }
+        @keyframes sweep { 0% {opacity: 0; transform: translateY(-10px)} 100% {opacity: 1; transform: translateY(0)} }
+
+        /* Placeholder & Card Effects */
+        .placeholder-box {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+            box-shadow: inset 0 0 20px rgba(14, 165, 233, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .placeholder-box::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: #00e1ff; box-shadow: 0 0 10px #00e1ff; animation: scan 3s linear infinite; opacity: 0.5;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .animate-ping-slow { animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite; }
+
+        /* --- SCROLL ANIMATION CLASSES --- */
+        .graph-line { stroke-dasharray: 1000; stroke-dashoffset: 1000; transition: stroke-dashoffset 2s ease-out; }
+        .play-graph .graph-line { stroke-dashoffset: 0; }
+        .play-graph .graph-area { transform: scaleY(1); }
+        .play-graph .milestone-1 { opacity: 1; transform: translateY(0); }
+        .play-graph .milestone-2 { opacity: 1; transform: translateY(0); }
+        .play-graph .milestone-3 { opacity: 1; transform: translateY(0); }
+        .play-graph .avatar-pop { transform: translateY(10px); }
+        .play-graph .thumbs-up-icon { opacity: 1; transition: opacity 0.5s 2.2s; }
+        
+        .play-chat .mouse-cursor { animation: cursorAction 2s ease-in-out forwards; }
+        .play-chat .chat-bubble { animation: bubblePop 0.2s forwards 1.5s; }
+        .play-chat .chat-window { animation: windowOpen 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 1.6s; }
+        .play-chat .msg-1 { animation: msgFadeIn 0.5s forwards 2.2s; }
+        .play-chat .msg-2 { animation: msgFadeIn 0.5s forwards 3.5s; }
+        .play-chat .msg-3 { animation: msgFadeIn 0.5s forwards 5.0s; }
+        .play-chat .msg-4 { animation: msgFadeIn 0.5s forwards 6.5s; }
+
+        .play-animation .incoming-screen { animation: fadeOut 0.5s forwards 2.5s; }
+        .play-animation .answer-slider { animation: slideAnswer 1.5s ease-in-out forwards 0.5s; }
+        .play-animation .active-element-1 { animation: fadeIn 0.5s forwards 3.0s; }
+        .play-animation .active-element-2 { animation: fadeIn 0.5s forwards 3.5s; }
+        .play-animation .active-element-3 { animation: fadeIn 0.5s forwards 4.5s; }
+        .play-animation .active-element-4 { animation: fadeIn 0.5s forwards 5.5s; }
+
+        .play-ranking .competitor-1 { transform: translateY(90px); }
+        .play-ranking .competitor-2 { transform: translateY(90px); }
+        .play-ranking .hero-listing { transform: translateY(-180px); z-index: 20; }
+        .play-ranking .glow-border { opacity: 1; }
+        .play-ranking .hero-listing { background-color: #fffbeb; border-color: #fbbf24; }
+
+        @keyframes slideAnswer {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(180px); }
+            80% { transform: translateX(180px) scale(1.1); }
+            100% { transform: translateX(180px) scale(1); }
+        }
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes cursorAction {
+            0% { opacity: 1; top: 20%; left: 20%; }
+            60% { top: 85%; left: 90%; transform: scale(1); }
+            70% { transform: scale(0.8); }
+            80% { transform: scale(1); }
+            100% { top: 85%; left: 90%; opacity: 0; }
+        }
+        @keyframes bubblePop { to { transform: scale(0); opacity: 0; } }
+        @keyframes windowOpen { to { transform: scale(1); } }
+        @keyframes msgFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .ease-spring { transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        /* --- Modal Styling --- */
+        #demo-modal.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #demo-modal.is-open .modal-content {
+            transform: scale(1);
+        }
+        /* Glowing Border Effects */
+        .modal-glow-phone {
+            border-color: #0ea5e9 !important; 
+            box-shadow: 0 0 30px rgba(14, 165, 233, 0.5), inset 0 0 10px rgba(14, 165, 233, 0.2) !important;
+        }
+        .modal-glow-phone #modal-headline { text-shadow: 0 0 15px rgba(14, 165, 233, 0.6); }
+
+        .modal-glow-crm {
+            border-color: #6366f1 !important; 
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.5), inset 0 0 10px rgba(99, 102, 241, 0.2) !important;
+        }
+        .modal-glow-crm #modal-headline { text-shadow: 0 0 15px rgba(99, 102, 241, 0.6); }
+
+        .modal-glow-reviews {
+            border-color: #eab308 !important; 
+            box-shadow: 0 0 30px rgba(234, 179, 8, 0.5), inset 0 0 10px rgba(234, 179, 8, 0.2) !important;
+        }
+        .modal-glow-reviews #modal-headline { text-shadow: 0 0 15px rgba(234, 179, 8, 0.6); }
+
+        .modal-glow-chat {
+            border-color: #22c55e !important; 
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.5), inset 0 0 10px rgba(34, 197, 94, 0.2) !important;
+        }
+        .modal-glow-chat #modal-headline { text-shadow: 0 0 15px rgba(34, 197, 94, 0.6); }
+
+        #modal-headline {
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="font-body text-slate-300 bg-brand-dark antialiased overflow-x-hidden selection:bg-brand-neon selection:text-brand-dark">
+
+    <!-- 1. HERO SECTION -->
+    <!-- Mobile: pt-8 pb-12 | Desktop: pt-24 pb-32 -->
+    <section class="relative pt-8 md:pt-24 pb-12 md:pb-32 overflow-hidden">
+        <div class="absolute inset-0 bg-circuit opacity-50"></div>
+        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-b from-brand-dark via-transparent to-brand-dark z-0"></div>
+        <div class="absolute top-20 right-20 w-96 h-96 bg-brand-accent/20 rounded-full blur-[100px] animate-pulse-slow pointer-events-none"></div>
+
+        <div class="container mx-auto px-4 md:px-6 relative z-10">
+            <div class="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+                <!-- Left Content -->
+                <div class="text-center md:text-left pt-6 md:pt-12">
+                    <!-- Compact Mobile Typography: text-3xl -->
+                    <h1 class="text-3xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-4 md:mb-6 text-white">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-neon via-brand-accent to-brand-purple drop-shadow-[0_0_10px_rgba(14,165,233,0.5)]">
+                            AI Receptionist & <br class="hidden md:block" />
+                            Dispatch Systems
+                        </span><br>
+                        <span class="text-white text-2xl md:text-5xl lg:text-6xl">for Restoration Companies</span>
+                    </h1>
+                    <p class="text-base md:text-2xl text-slate-300 mb-6 md:mb-8 leading-relaxed font-light">
+                        Stop missing calls. Stop losing jobs. Use our AI receptionist to answer, qualify, and dispatch every restoration call, day or night.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center md:justify-start items-center">
+                        <a href="#" class="group relative px-8 py-3 md:py-4 bg-brand-accent text-white font-bold rounded-xl shadow-neon transition-all hover:scale-105 hover:bg-brand-neon hover:text-brand-dark overflow-hidden w-full sm:w-auto inline-block text-center">
+                            <div class="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-500 ease-in-out -skew-x-12 -ml-4 w-full"></div>
+                            <span class="relative flex items-center justify-center gap-2">
+                                Book a Strategy Call <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </span>
+                        </a>
+                        <p class="text-xs md:text-sm text-slate-400 md:border-l-2 md:border-slate-700 md:pl-4 text-center md:text-left">
+                            A quick 15-minute call to see<br>if this fits your business.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Animation: "Revenue Rocket" Graph Dashboard -->
+                <div id="hero-graph" class="relative group mt-6 md:mt-0 animate-float opacity-0 translate-y-10 transition-all duration-1000 ease-out scroll-trigger">
+                    <div class="absolute -inset-0.5 bg-gradient-to-r from-brand-neon to-brand-purple rounded-2xl opacity-75 blur group-hover:opacity-100 transition duration-500"></div>
+                    
+                    <!-- Main Dashboard Container -->
+                    <div class="relative w-full aspect-[4/3] bg-slate-900 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl flex flex-col">
+                        
+                        <!-- Dashboard Header -->
+                        <div class="h-12 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between px-4 md:px-6 z-20 backdrop-blur-sm">
+                            <!-- Logo Area (Top Left) -->
+                            <div class="flex items-center gap-3">
+                                <!-- ACTUAL LOGO IMAGE IMPLEMENTATION -->
+                                <div class="h-8 w-auto flex items-center gap-2">
+                                    <div class="h-8 w-auto relative flex items-center">
+                                        <img src="Background Removed Logo.jpg" alt="Restoration AI Logo" class="h-10 w-auto object-contain filter drop-shadow-[0_0_5px_rgba(14,165,233,0.5)]" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <!-- Fallback if image missing -->
+                                        <div class="hidden items-center gap-2">
+                                            <i class="fa-solid fa-droplet text-brand-neon text-xl"></i>
+                                            <span class="text-white font-bold text-sm tracking-wide uppercase">Restoration AI</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Live Revenue Counter -->
+                            <div class="px-3 py-1 bg-slate-800 rounded-full border border-slate-700 flex items-center gap-2 shadow-inner">
+                                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                <div class="flex flex-col items-end leading-none">
+                                    <span class="text-[8px] text-slate-400 uppercase font-bold">Total Revenue</span>
+                                    <span class="text-green-400 font-mono text-xs font-bold revenue-counter">$0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Graph Content Area (Bar Chart) -->
+                        <div class="flex-1 relative overflow-hidden p-6 bg-slate-900 flex flex-col">
+                            <!-- Background Grid -->
+                            <div class="absolute inset-0 z-0" style="background-image: linear-gradient(to bottom, #1e293b 1px, transparent 1px); background-size: 100% 40px; opacity: 0.3;"></div>
+                            
+                            <!-- Chart Container -->
+                            <div class="flex-1 flex items-end justify-between gap-2 z-10 px-2 pb-6 relative">
+                                
+                                <!-- Bar 1 -->
+                                <div class="flex flex-col items-center gap-2 w-1/6 group/bar">
+                                    <div class="relative w-full bg-slate-800 rounded-t-md overflow-hidden shadow-[0_0_10px_rgba(14,165,233,0.1)] bar-container h-[20%]">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-brand-accent/20 to-brand-neon/60 bar-fill transform scale-y-0 origin-bottom transition-transform duration-1000 ease-out" style="transition-delay: 0ms;"></div>
+                                        <!-- Tooltip -->
+                                        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[9px] font-bold px-2 py-1 rounded border border-slate-600 opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap">$12k</div>
+                                    </div>
+                                    <span class="text-[9px] text-slate-500 font-bold">Month 1</span>
+                                </div>
+
+                                <!-- Bar 2 -->
+                                <div class="flex flex-col items-center gap-2 w-1/6 group/bar">
+                                    <div class="relative w-full bg-slate-800 rounded-t-md overflow-hidden shadow-[0_0_10px_rgba(14,165,233,0.15)] bar-container h-[35%]">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-brand-accent/20 to-brand-neon/70 bar-fill transform scale-y-0 origin-bottom transition-transform duration-1000 ease-out" style="transition-delay: 200ms;"></div>
+                                        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[9px] font-bold px-2 py-1 rounded border border-slate-600 opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap">$28k</div>
+                                    </div>
+                                    <span class="text-[9px] text-slate-500 font-bold">Month 2</span>
+                                </div>
+
+                                <!-- Bar 3 -->
+                                <div class="flex flex-col items-center gap-2 w-1/6 group/bar">
+                                    <div class="relative w-full bg-slate-800 rounded-t-md overflow-hidden shadow-[0_0_15px_rgba(14,165,233,0.2)] bar-container h-[50%]">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-brand-accent/20 to-brand-neon/80 bar-fill transform scale-y-0 origin-bottom transition-transform duration-1000 ease-out" style="transition-delay: 400ms;"></div>
+                                        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[9px] font-bold px-2 py-1 rounded border border-slate-600 opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap">$45k</div>
+                                    </div>
+                                    <span class="text-[9px] text-slate-500 font-bold">Month 3</span>
+                                </div>
+
+                                <!-- Bar 4 -->
+                                <div class="flex flex-col items-center gap-2 w-1/6 group/bar">
+                                    <div class="relative w-full bg-slate-800 rounded-t-md overflow-hidden shadow-[0_0_20px_rgba(14,165,233,0.25)] bar-container h-[70%]">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-brand-accent/20 to-brand-neon/90 bar-fill transform scale-y-0 origin-bottom transition-transform duration-1000 ease-out" style="transition-delay: 600ms;"></div>
+                                        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[9px] font-bold px-2 py-1 rounded border border-slate-600 opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap">$82k</div>
+                                    </div>
+                                    <span class="text-[9px] text-slate-500 font-bold">Month 4</span>
+                                </div>
+
+                                <!-- Bar 5 (Tallest) -->
+                                <div class="flex flex-col items-center gap-2 w-1/6 group/bar relative">
+                                    <div class="relative w-full bg-slate-800 rounded-t-md overflow-hidden shadow-[0_0_30px_rgba(14,165,233,0.4)] bar-container h-[90%] border-t-2 border-brand-neon">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-brand-accent/40 to-brand-neon bar-fill transform scale-y-0 origin-bottom transition-transform duration-1000 ease-out" style="transition-delay: 800ms;"></div>
+                                        
+                                        <!-- Floating Badge for Top Bar -->
+                                        <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-brand-neon text-brand-dark text-[10px] font-extrabold px-3 py-1 rounded shadow-[0_0_15px_#00e1ff] animate-bounce" style="animation-delay: 1.8s">
+                                            $138k
+                                        </div>
+                                    </div>
+                                    <span class="text-[9px] text-brand-neon font-bold">Month 5</span>
+                                    
+                                    <!-- Avatar Character (Pops up next to tallest bar) -->
+                                    <div class="absolute bottom-6 -right-16 w-32 h-32 md:w-40 md:h-40 z-30 transform translate-y-full transition-transform duration-700 ease-spring avatar-pop">
+                                        <div class="w-full h-full relative">
+                                            <!-- ACTUAL AVATAR IMAGE IMPLEMENTATION -->
+                                            <img src="Removed Background.jpg" alt="AI Avatar" class="w-full h-full object-contain drop-shadow-2xl filter brightness-110 contrast-110" onerror="this.style.display='none';">
+                                            
+                                            <!-- Fallback if image missing -->
+                                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none" style="display: none;" id="avatar-fallback">
+                                                <span class="text-4xl">💧👍</span>
+                                            </div>
+                                            
+                                            <!-- Thumbs Up Badge -->
+                                            <div class="absolute top-4 -left-2 bg-white rounded-full p-2 shadow-lg animate-bounce thumbs-up-icon opacity-0 border-2 border-blue-500 z-40">
+                                                <i class="fa-solid fa-thumbs-up text-blue-600 text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            
+                            <!-- Axis Labels -->
+                            <div class="absolute left-2 top-6 bottom-12 w-4 flex flex-col justify-between text-[8px] text-slate-500 font-mono">
+                                <span>$150k</span>
+                                <span>$100k</span>
+                                <span>$50k</span>
+                                <span>$0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Animation Logic for Bar Chart -->
+                    <style>
+                        /* Initial State */
+                        /* Bars are set to scale-y-0 in inline class */
+                        
+                        /* Play State */
+                        .play-graph .bar-fill { transform: scaleY(1); }
+                        .play-graph .avatar-pop { transform: translateY(0); } 
+                        .play-graph .thumbs-up-icon { opacity: 1; transition: opacity 0.5s 1.8s; }
+                        
+                        .ease-spring { transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                    </style>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW HEADLINE SECTION (Updated Copy) -->
+    <section class="pt-8 pb-4 bg-brand-dark text-center relative z-10">
+        <div class="container mx-auto px-4 md:px-6">
+            <h2 class="text-2xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4 md:mb-6 leading-tight max-w-4xl mx-auto">
+                AI that books your calls, organizes your jobs, and stacks your reviews on autopilot
+            </h2>
+            
+            <!-- Bouncing Arrow -->
+            <div class="animate-bounce mt-2 relative z-20">
+                <i class="fa-solid fa-chevron-down text-brand-accent text-3xl md:text-4xl opacity-80"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURE 1: AI VOICE AGENT (Original Dark Background) -->
+    <!-- Mobile: pt-4 pb-10 | Desktop: pt-8 pb-24 -->
+    <section class="pt-4 pb-10 md:pt-8 md:pb-24 bg-brand-dark relative">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+                <div class="order-2 md:order-1">
+                    <div class="inline-block px-3 py-1 mb-4 border border-brand-accent/30 rounded-lg bg-brand-accent/10"><span class="text-brand-neon font-bold tracking-wider uppercase text-xs">AI Phone Agent</span></div>
+                    <h2 class="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4">Answers Calls. Wakes Up Techs. Gets Jobs Moving.</h2>
+                    <p class="text-brand-accent text-base md:text-lg font-semibold mb-8">Your AI answers fast, gets job details, and pushes your team into action.</p>
+                    <div class="space-y-4 md:space-y-6">
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-card border border-brand-accent flex items-center justify-center text-brand-neon mt-1"><i class="fa-solid fa-phone-slash text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Never Miss a Call</h4><p class="text-slate-400 text-sm">Your AI answers every call in seconds.</p></div></div>
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-card border border-brand-accent flex items-center justify-center text-brand-neon mt-1"><i class="fa-solid fa-list-check text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Collects Job Details</h4><p class="text-slate-400 text-sm">Name, address, loss type, and urgency.</p></div></div>
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-card border border-brand-accent flex items-center justify-center text-brand-neon mt-1"><i class="fa-solid fa-bell text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Wakes Up Techs</h4><p class="text-slate-400 text-sm">Calls/texts until someone confirms.</p></div></div>
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-card border border-brand-accent flex items-center justify-center text-brand-neon mt-1"><i class="fa-solid fa-file-lines text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Clear Summaries</h4><p class="text-slate-400 text-sm">Clean job notes for your techs.</p></div></div>
+                    </div>
+                    <!-- BUTTON GROUP: See Demo + Test AI Live -->
+                    <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                        <button class="see-demo-btn px-8 py-3 bg-brand-accent text-white font-bold rounded-xl shadow-neon hover:bg-brand-neon hover:text-brand-dark transition-all flex items-center justify-center gap-2 group" data-section="phone">
+                            <i class="fa-solid fa-play-circle text-xl group-hover:scale-110 transition-transform"></i> See Demo
+                        </button>
+                        <button class="px-8 py-3 bg-green-500 text-white font-bold rounded-xl shadow-neon-green hover:bg-green-400 hover:shadow-[0_0_30px_rgba(34,197,94,0.8)] transition-all flex items-center justify-center gap-2 group">
+                            <i class="fa-solid fa-phone text-xl group-hover:scale-110 transition-transform"></i> Test AI Live
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="phone-ui" class="order-1 md:order-2 relative flex justify-center opacity-0 translate-y-10 transition-all duration-1000 ease-out">
+                    <div class="relative w-64 h-[500px] bg-slate-900 rounded-[3rem] border-4 border-slate-800 shadow-2xl overflow-hidden transform transition hover:scale-105 duration-500">
+                        <div class="absolute top-0 inset-x-0 h-6 w-32 mx-auto bg-slate-800 rounded-b-xl z-30"></div>
+                        <div class="incoming-screen absolute inset-0 z-20 bg-slate-950 flex flex-col pt-16 pb-8 px-6 pointer-events-none">
+                            <div class="flex flex-col items-center mb-auto"><div class="w-24 h-24 rounded-full bg-slate-800 flex items-center justify-center mb-4 border border-slate-700"><i class="fa-solid fa-user text-4xl text-slate-500"></i></div><h3 class="text-2xl text-white font-light">Homeowner</h3><p class="text-slate-400 text-sm mt-1">Incoming Call...</p></div>
+                            <div class="mt-auto"><div class="relative h-12 bg-slate-800 rounded-full flex items-center px-1 overflow-hidden"><div class="absolute inset-0 flex items-center justify-center"><span class="text-xs text-slate-500 font-bold tracking-widest uppercase animate-pulse">Slide to Answer</span></div><div class="answer-slider w-10 h-10 bg-green-500 rounded-full flex items-center justify-center shadow-lg z-10"><i class="fa-solid fa-phone text-white text-sm"></i></div></div></div>
+                        </div>
+                        <div class="absolute inset-0 flex flex-col pt-12 pb-6 px-4 bg-slate-900/95 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-slate-950 z-10">
+                            <div class="flex flex-col items-center mb-6">
+                                <div class="w-28 h-28 rounded-full bg-brand-dark border-2 border-brand-neon/50 flex items-center justify-center shadow-[0_0_30px_rgba(14,165,233,0.4)] mb-4 relative overflow-hidden">
+                                    <svg width="60" height="80" viewBox="0 0 100 145" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-brand-neon drop-shadow-[0_0_8px_rgba(14,165,233,0.8)] z-10"><defs><linearGradient id="circuitGrad" x1="50" y1="0" x2="50" y2="145" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e1ff" /><stop offset="100%" stop-color="#0ea5e9" /></linearGradient></defs><path d="M50 5 C50 5 95 65 95 90 A45 45 0 1 1 5 90 C5 65 50 5 50 5 Z" stroke="url(#circuitGrad)" stroke-width="3" fill="rgba(14, 165, 233, 0.1)"/><g stroke="url(#circuitGrad)" stroke-width="3" stroke-linecap="round"><line x1="50" y1="25" x2="50" y2="120" /><line x1="35" y1="55" x2="35" y2="110" /><line x1="65" y1="55" x2="65" y2="110" /><line x1="20" y1="80" x2="20" y2="100" /><line x1="80" y1="80" x2="80" y2="100" /><circle cx="50" cy="40" r="3" fill="#020617" stroke-width="2"/><circle cx="35" cy="70" r="3" fill="#020617" stroke-width="2"/><circle cx="65" cy="70" r="3" fill="#020617" stroke-width="2"/><circle cx="20" cy="90" r="3" fill="#020617" stroke-width="2"/><circle cx="80" cy="90" r="3" fill="#020617" stroke-width="2"/><line x1="50" y1="60" x2="35" y2="70" /><line x1="50" y1="60" x2="65" y2="70" /><line x1="35" y1="90" x2="20" y2="100" /><line x1="65" y1="90" x2="80" y2="100" /></g></svg>
+                                    <div class="absolute inset-0 rounded-full border border-brand-neon animate-ping-slow opacity-30"></div>
+                                </div>
+                                <h3 class="text-white font-bold text-lg tracking-wide">Restoration AI</h3>
+                                <div class="flex items-center gap-2 mt-1"><div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div><p class="text-slate-400 text-xs uppercase tracking-widest">Call Active 00:14</p></div>
+                            </div>
+                            <div class="active-element-1 flex justify-center gap-1 h-8 mb-auto opacity-0"><div class="w-1 bg-brand-neon rounded-full animate-wave"></div><div class="w-1 bg-brand-neon rounded-full animate-wave" style="animation-delay: 0.1s"></div><div class="w-1 bg-brand-neon rounded-full animate-wave" style="animation-delay: 0.2s"></div><div class="w-1 bg-brand-neon rounded-full animate-wave" style="animation-delay: 0.3s"></div><div class="w-1 bg-brand-neon rounded-full animate-wave" style="animation-delay: 0.4s"></div></div>
+                            <div class="space-y-3 w-full mb-4"><div class="active-element-2 bg-slate-800 p-3 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl text-xs text-slate-300 opacity-0 border border-slate-700"><span class="text-[9px] font-bold text-slate-500 block mb-1 uppercase">Homeowner</span>"My basement is flooding right now!"</div><div class="active-element-3 bg-brand-neon/10 border border-brand-neon/30 p-3 rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl text-xs text-white opacity-0"><span class="text-[9px] font-bold text-brand-neon block mb-1 uppercase">AI Agent</span>"I'm dispatching a tech to you immediately."</div></div>
+                            <div class="active-element-4 bg-green-500/20 border border-green-500 p-2.5 rounded-xl flex items-center gap-3 opacity-0 shadow-lg backdrop-blur-md mb-12"><div class="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center text-black shrink-0"><i class="fa-solid fa-check text-xs"></i></div><div><div class="text-white text-xs font-bold leading-tight">Tech Notified</div><div class="text-green-400 text-[9px] leading-tight">with Job Summary</div></div></div>
+                        </div>
+                    </div>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-brand-accent/10 rounded-full blur-[80px] pointer-events-none"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURE 2: CRM (Original Card Background) -->
+    <!-- Mobile: py-10 | Desktop: py-24 -->
+    <section class="py-10 md:py-24 bg-brand-card relative border-y border-slate-800">
+        <div class="absolute inset-0 bg-grid-pattern opacity-20 pointer-events-none"></div>
+        <div class="container mx-auto px-4 md:px-6 relative z-10">
+            <div class="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+                <!-- Placeholder Left (Laptop CRM Dashboard) - Added ID crm-ui -->
+                <div id="crm-ui" class="relative group order-1 flex justify-center opacity-0 translate-y-10 transition-all duration-1000 ease-out">
+                    <!-- Laptop Container -->
+                    <div class="relative w-full max-w-[600px]">
+                        <!-- Screen -->
+                        <div class="bg-slate-950 rounded-t-[1.5rem] border-[12px] border-slate-950 shadow-2xl relative overflow-hidden aspect-[16/10]">
+                            <!-- Webcam -->
+                            <div class="absolute top-[-8px] left-1/2 -translate-x-1/2 w-20 h-3 bg-slate-900 rounded-b-lg z-20 flex justify-center items-center"><div class="w-1 h-1 bg-slate-800 rounded-full"></div></div>
+                            <!-- CRM Window -->
+                            <div class="w-full h-full bg-slate-900 flex overflow-hidden relative">
+                                <!-- Sidebar -->
+                                <div class="w-1/4 bg-slate-950 border-r border-slate-800 flex flex-col py-3 md:py-4 overflow-y-auto scrollbar-hide">
+                                    <div class="px-3 md:px-4 mb-4 flex items-center gap-2 shrink-0">
+                                        <div class="w-5 h-5 bg-brand-accent rounded-md flex items-center justify-center"><i class="fa-solid fa-bolt text-white text-[10px]"></i></div>
+                                        <span class="text-[10px] font-bold text-white hidden sm:block tracking-wide">CRM Pro</span>
+                                    </div>
+                                    <div class="space-y-0.5 px-2">
+                                        <div class="flex items-center gap-3 px-2 py-1.5 text-slate-400 rounded"><i class="fa-solid fa-table-columns text-[10px] w-4"></i><span class="text-[8px] font-medium hidden sm:block">Dashboard</span></div>
+                                        <div class="flex items-center gap-3 px-2 py-1.5 text-slate-400 rounded"><i class="fa-regular fa-comments text-[10px] w-4"></i><span class="text-[8px] font-medium hidden sm:block">Conversations</span></div>
+                                        <div class="flex items-center gap-3 px-2 py-1.5 bg-brand-accent text-white rounded shadow-glow-sm"><i class="fa-solid fa-calendar-days text-[10px] w-4"></i><span class="text-[8px] font-bold hidden sm:block">Calendars</span></div>
+                                        <div class="flex items-center gap-3 px-2 py-1.5 text-slate-400 rounded"><i class="fa-solid fa-address-book text-[10px] w-4"></i><span class="text-[8px] font-medium hidden sm:block">Contacts</span></div>
+                                        <div class="flex items-center gap-3 px-2 py-1.5 text-slate-400 rounded"><i class="fa-solid fa-diagram-project text-[10px] w-4"></i><span class="text-[8px] font-medium hidden sm:block">Job Pipeline</span></div>
+                                        <div class="flex items-center gap-3 px-2 py-1.5 text-slate-400 rounded"><i class="fa-solid fa-sack-dollar text-[10px] w-4"></i><span class="text-[8px] font-medium hidden sm:block">Payments</span></div>
+                                        <div class="flex items-center gap-3 px-2 py-1.5 text-slate-400 rounded"><i class="fa-solid fa-bullhorn text-[10px] w-4"></i><span class="text-[8px] font-medium hidden sm:block">Marketing</span></div>
+                                        <div class="flex items-center gap-3 px-2 py-1.5 text-slate-400 rounded"><i class="fa-solid fa-robot text-[10px] w-4"></i><span class="text-[8px] font-medium hidden sm:block">Automation</span></div>
+                                        <div class="flex items-center gap-3 px-2 py-1.5 text-slate-400 rounded"><i class="fa-solid fa-globe text-[10px] w-4"></i><span class="text-[8px] font-medium hidden sm:block">Sites</span></div>
+                                    </div>
+                                </div>
+                                <!-- Content -->
+                                <div class="flex-1 bg-slate-900 flex flex-col relative">
+                                    <div class="h-10 border-b border-slate-800 flex justify-between items-center px-4 shrink-0">
+                                        <h3 class="text-xs font-bold text-white flex items-center gap-2">Calendar <span class="text-slate-500 font-normal">| Weekly</span></h3>
+                                        <div class="flex gap-2 items-center">
+                                            <div class="px-2 py-1 bg-brand-accent text-white text-[9px] font-bold rounded shadow-glow-sm">+ New Appt</div>
+                                            <div class="w-5 h-5 rounded-full bg-slate-700 border border-slate-600"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 p-2 overflow-hidden flex flex-col">
+                                        <div class="grid grid-cols-5 gap-1 mb-2 text-center border-b border-slate-800 pb-2">
+                                            <div class="text-[8px] text-slate-500">Mon</div><div class="text-[8px] text-slate-500">Tue</div><div class="text-[8px] text-brand-accent font-bold">Wed</div><div class="text-[8px] text-slate-500">Thu</div><div class="text-[8px] text-slate-500">Fri</div>
+                                        </div>
+                                        <div class="flex-1 grid grid-cols-5 gap-1 relative h-full">
+                                            <div class="border-r border-slate-800/50 h-full relative"><div class="absolute top-[60%] left-[5%] w-[90%] bg-slate-800 border-l-2 border-slate-600 p-1 rounded opacity-60"><div class="h-1 w-8 bg-slate-600 rounded mb-1"></div><div class="h-1 w-12 bg-slate-700 rounded"></div></div></div>
+                                            <div class="border-r border-slate-800/50 h-full relative"><div class="absolute top-[10%] left-[5%] w-[90%] bg-slate-800 border-l-2 border-green-600 p-1 rounded opacity-70"><div class="text-[6px] text-slate-400 font-bold truncate">Mold Inspect.</div></div><div class="absolute top-[80%] left-[5%] w-[90%] bg-slate-800 border-l-2 border-slate-600 p-1 rounded opacity-60"><div class="h-1 w-10 bg-slate-600 rounded"></div></div></div>
+                                            <div class="border-r border-slate-800/50 h-full bg-brand-accent/5 relative">
+                                                <div class="absolute top-[40%] w-full h-[1px] bg-red-500 opacity-50 z-10"></div>
+                                                <div class="absolute top-[5%] left-[5%] w-[90%] bg-slate-800 border-l-2 border-slate-600 p-1 rounded opacity-60"><div class="h-1 w-12 bg-slate-600 rounded"></div></div>
+                                                
+                                                <!-- THE NEW APPOINTMENT (Now triggered by .play-crm class) -->
+                                                <div class="appointment-trigger absolute top-[35%] left-[5%] w-[90%] bg-brand-accent border-l-2 border-white p-1.5 rounded shadow-lg opacity-0">
+                                                    <div class="text-[7px] font-bold text-white truncate">Water Loss Inspection</div><div class="text-[6px] text-blue-100 flex items-center gap-1 mt-0.5"><i class="fa-regular fa-clock"></i> 10:00 AM</div>
+                                                </div>
+                                            </div>
+                                            <div class="border-r border-slate-800/50 h-full relative"><div class="absolute top-[30%] left-[5%] w-[90%] bg-slate-800 border-l-2 border-orange-500 p-1 rounded opacity-70"><div class="text-[6px] text-slate-400 font-bold truncate">Fire Damage Est.</div></div></div>
+                                            <div class="h-full relative"><div class="absolute top-[50%] left-[5%] w-[90%] bg-slate-800 border-l-2 border-slate-600 p-1 rounded opacity-60"><div class="h-1 w-10 bg-slate-600 rounded"></div></div></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Notification Toast (Delayed to be LAST) -->
+                                    <div class="crm-toast absolute bottom-4 right-4 bg-white border-l-4 border-green-500 py-2 px-3 rounded shadow-2xl flex items-center gap-2 opacity-0 translate-y-4">
+                                        <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600"><i class="fa-solid fa-check text-xs"></i></div>
+                                        <div><div class="text-[10px] font-bold text-slate-900">Appointment Booked</div><div class="text-[8px] text-slate-500">Confirmation sent to client</div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="h-3 bg-gray-800 rounded-b-xl mx-auto w-full shadow-md border-t border-gray-700 relative"><div class="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gray-700 rounded-b-md"></div></div>
+                        <div class="absolute -bottom-2 left-4 right-4 h-2 bg-black/40 blur-md rounded-full"></div>
+                    </div>
+                    
+                    <!-- CSS for CRM Animation Sequence -->
+                    <style>
+                        /* Appointment Pops In at 1.5s */
+                        .play-crm .appointment-trigger {
+                            animation: fadeInPop 0.5s ease-out forwards 1.5s;
+                        }
+                        /* Notification Slides Up at 3.0s (LAST) */
+                        .play-crm .crm-toast {
+                            animation: slideInToast 0.5s ease-out forwards 3.0s;
+                        }
+                        
+                        @keyframes fadeInPop {
+                            0% { opacity: 0; transform: scale(0.9); }
+                            50% { transform: scale(1.05); }
+                            100% { opacity: 1; transform: scale(1); }
+                        }
+                        @keyframes slideInToast {
+                            from { opacity: 0; transform: translateY(20px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+                    </style>
+                </div>
+
+                <!-- Content Right -->
+                <div class="order-2">
+                    <div class="inline-block px-3 py-1 mb-4 border border-brand-purple/30 rounded-lg bg-brand-purple/10"><span class="text-brand-purple font-bold tracking-wider uppercase text-xs">Restoration CRM</span></div>
+                    <h2 class="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4">All Your Jobs in One Place</h2>
+                    <p class="text-brand-purple text-base md:text-lg font-semibold mb-8">Track calls, jobs, and messages easily.</p>
+                    <div class="space-y-4 md:space-y-6">
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-dark border border-brand-purple flex items-center justify-center text-brand-purple mt-1"><i class="fa-solid fa-magnifying-glass text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Easy Job Tracking</h4><p class="text-slate-400 text-sm">See jobs start to finish.</p></div></div>
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-dark border border-brand-purple flex items-center justify-center text-brand-purple mt-1"><i class="fa-solid fa-folder-open text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Notes in One Place</h4><p class="text-slate-400 text-sm">Photos, notes, and job info.</p></div></div>
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-dark border border-brand-purple flex items-center justify-center text-brand-purple mt-1"><i class="fa-solid fa-headset text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Every Call Logged</h4><p class="text-slate-400 text-sm">Never forget a detail.</p></div></div>
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-dark border border-brand-purple flex items-center justify-center text-brand-purple mt-1"><i class="fa-solid fa-arrow-right-arrow-left text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Simple Pipelines</h4><p class="text-slate-400 text-sm">Lead → Inspection → Paid.</p></div></div>
+                    </div>
+                    <!-- NEW: Fixed "See Demo" Button -->
+                    <button class="see-demo-btn mt-8 px-8 py-3 bg-brand-purple text-white font-bold rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.4)] hover:bg-[#7a7dff] hover:shadow-[0_0_20px_rgba(99,102,241,0.6)] transition-all flex items-center gap-2 group" data-section="crm">
+                        <i class="fa-solid fa-play-circle text-xl group-hover:scale-110 transition-transform"></i> See Demo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURE 3: REVIEWS (Original Dark Background) -->
+    <!-- Mobile: py-10 | Desktop: py-24 -->
+    <section class="py-10 md:py-24 bg-brand-dark">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+                <!-- Content Left -->
+                <div class="order-2 md:order-1">
+                    <div class="inline-block px-3 py-1 mb-4 border border-yellow-500/30 rounded-lg bg-yellow-500/10"><span class="text-yellow-400 font-bold tracking-wider uppercase text-xs">Review Tool</span></div>
+                    <h2 class="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4">Turn Finished Jobs Into 5-Star Reviews</h2>
+                    <p class="text-yellow-400 text-base md:text-lg font-semibold mb-8">Your AI asks past customers for reviews automatically.</p>
+                    <div class="space-y-4 md:space-y-6">
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-card border border-yellow-500 flex items-center justify-center text-yellow-400 mt-1"><i class="fa-solid fa-paper-plane text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Auto Review Requests</h4><p class="text-slate-400 text-sm">Sends texts and emails for you.</p></div></div>
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-card border border-yellow-500 flex items-center justify-center text-yellow-400 mt-1"><i class="fa-solid fa-ranking-star text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Boost Your Ranking</h4><p class="text-slate-400 text-sm">More reviews means more calls.</p></div></div>
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-card border border-yellow-500 flex items-center justify-center text-yellow-400 mt-1"><i class="fa-solid fa-robot text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Works by Itself</h4><p class="text-slate-400 text-sm">Zero time needed from your team.</p></div></div>
+                    </div>
+                    <!-- NEW: Fixed "See Demo" Button -->
+                    <button class="see-demo-btn mt-8 px-8 py-3 bg-yellow-500 text-brand-dark font-bold rounded-xl shadow-[0_0_15px_rgba(234,179,8,0.4)] hover:bg-yellow-400 hover:shadow-[0_0_20px_rgba(234,179,8,0.6)] transition-all flex items-center gap-2 group" data-section="reviews">
+                        <i class="fa-solid fa-play-circle text-xl group-hover:scale-110 transition-transform"></i> See Demo
+                    </button>
+                </div>
+                
+                <!-- Placeholder Right (Google Ranking Climber) -->
+                <div id="review-ui" class="order-1 md:order-2 relative flex justify-center opacity-0 translate-y-10 transition-all duration-1000 ease-out">
+                    <div class="relative w-full max-w-[600px]">
+                        <div class="bg-slate-950 rounded-t-[1.5rem] border-[12px] border-slate-950 shadow-2xl relative overflow-hidden aspect-[16/10]">
+                            <div class="absolute top-[-8px] left-1/2 -translate-x-1/2 w-20 h-3 bg-slate-900 rounded-b-lg z-20 flex justify-center items-center"><div class="w-1 h-1 bg-slate-800 rounded-full"></div></div>
+                            <div class="w-full h-full bg-white flex flex-col overflow-hidden relative">
+                                <div class="h-12 border-b border-gray-200 flex items-center px-4 gap-4 shrink-0 bg-white z-10"><span class="text-lg font-bold text-blue-500">G</span><div class="flex-1 h-8 bg-white rounded-full shadow-sm border border-gray-300 flex items-center px-3"><span class="text-xs text-gray-600">water damage restoration near me</span><i class="fa-solid fa-magnifying-glass text-blue-500 ml-auto text-xs"></i></div><div class="w-6 h-6 bg-purple-600 rounded-full text-white text-[10px] flex items-center justify-center">A</div></div>
+                                <div class="flex-1 p-4 bg-gray-50 flex flex-col relative overflow-hidden">
+                                    <div class="text-xs font-bold text-gray-800 mb-3">Businesses</div>
+                                    <div class="flex-1 relative">
+                                        <div class="competitor-1 absolute top-0 w-full bg-white p-3 rounded border border-gray-200 shadow-sm flex justify-between items-start transition-all duration-1000"><div><div class="text-[10px] font-bold text-gray-800">1. Metro Restoration</div><div class="flex items-center gap-1 mt-0.5"><span class="text-[9px] text-orange-400 font-bold">4.8</span><div class="flex text-[8px] text-orange-400"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="text-[9px] text-gray-500">(156)</span></div><div class="text-[9px] text-gray-500 mt-1">Water damage restoration service</div></div><div class="w-8 h-8 bg-gray-100 rounded flex items-center justify-center"><i class="fa-solid fa-image text-gray-300"></i></div></div>
+                                        <div class="competitor-2 absolute top-[90px] w-full bg-white p-3 rounded border border-gray-200 shadow-sm flex justify-between items-start transition-all duration-1000"><div><div class="text-[10px] font-bold text-gray-800">2. 24/7 Water Pros</div><div class="flex items-center gap-1 mt-0.5"><span class="text-[9px] text-orange-400 font-bold">4.6</span><div class="flex text-[8px] text-orange-400"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="text-[9px] text-gray-500">(92)</span></div><div class="text-[9px] text-gray-500 mt-1">Emergency restoration services</div></div><div class="w-8 h-8 bg-gray-100 rounded flex items-center justify-center"><i class="fa-solid fa-image text-gray-300"></i></div></div>
+                                        <div class="hero-listing absolute top-[180px] w-full bg-white p-3 rounded border-2 border-transparent shadow-sm flex justify-between items-start transition-all duration-1000 z-10"><div><div class="flex items-center gap-2"><span class="rank-number text-[10px] font-bold text-gray-800">3.</span><span class="text-[10px] font-bold text-gray-900">Your Restoration Company</span></div><div class="flex items-center gap-1 mt-0.5"><span class="rating-val text-[9px] text-orange-400 font-bold">4.2</span><div class="flex text-[8px] text-orange-400 stars-container"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i></div><span class="review-count text-[9px] text-gray-500">(12)</span></div><div class="text-[9px] text-gray-500 mt-1">Water damage restoration service</div></div><div class="w-8 h-8 bg-brand-accent/10 rounded flex items-center justify-center"><i class="fa-solid fa-house-flood-water text-brand-accent"></i></div><div class="glow-border absolute inset-0 border-2 border-yellow-400 rounded opacity-0 transition-opacity duration-500 shadow-[0_0_15px_rgba(250,204,21,0.5)] pointer-events-none"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="h-3 bg-gray-800 rounded-b-xl mx-auto w-full shadow-md border-t border-gray-700 relative"><div class="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gray-700 rounded-b-md"></div></div>
+                        <div class="absolute -bottom-2 left-4 right-4 h-2 bg-black/40 blur-md rounded-full"></div>
+                    </div>
+                    
+                    <style>
+                        /* Animation Classes - Updated transforms for 90px spacing */
+                        .play-ranking .competitor-1 { transform: translateY(90px); } /* Move 1 to 2 */
+                        .play-ranking .competitor-2 { transform: translateY(90px); } /* Move 2 to 3 */
+                        .play-ranking .hero-listing { transform: translateY(-180px); z-index: 20; } /* Move 3 to 1 */
+                        
+                        .play-ranking .glow-border { opacity: 1; }
+                        .play-ranking .hero-listing { background-color: #fffbeb; border-color: #fbbf24; } /* Light yellow bg */
+                    </style>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURE 4: CHAT WIDGET (Original Card Background) -->
+    <!-- Mobile: py-10 | Desktop: py-24 -->
+    <section class="py-10 md:py-24 bg-brand-card relative overflow-hidden">
+        <div class="container mx-auto px-4 md:px-6 relative z-10">
+            <div class="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+                <!-- Placeholder Left (Chat Widget Animation) -->
+                <div id="chat-ui" class="relative order-1 flex justify-center opacity-0 translate-y-10 transition-all duration-1000 ease-out">
+                    <div class="relative w-full max-w-[600px]">
+                        <div class="bg-slate-950 rounded-t-[1.5rem] border-[12px] border-slate-950 shadow-2xl relative overflow-hidden aspect-[16/10]">
+                            <div class="absolute top-[-8px] left-1/2 -translate-x-1/2 w-20 h-3 bg-slate-900 rounded-b-lg z-20 flex justify-center items-center"><div class="w-1 h-1 bg-slate-800 rounded-full"></div></div>
+                            <div class="w-full h-full bg-white flex flex-col overflow-hidden relative font-sans">
+                                <div class="h-12 border-b border-gray-100 flex items-center justify-between px-6 shrink-0 bg-white z-10"><div class="font-extrabold text-blue-900 text-sm tracking-tighter">ABC<span class="text-blue-500">RESTORATION</span></div><div class="flex gap-3 text-[8px] font-bold text-gray-500 uppercase"><span>Services</span><span>About</span><span>Contact</span></div></div>
+                                <div class="flex-1 bg-gray-50 relative">
+                                    <div class="absolute inset-0 bg-blue-900/10"></div>
+                                    <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#2563eb 1px, transparent 1px); background-size: 20px 20px;"></div>
+                                    <div class="relative z-10 p-8 mt-4"><div class="h-2 w-16 bg-blue-500 mb-3"></div><h1 class="text-2xl font-extrabold text-blue-900 leading-tight mb-2">Water Damage?<br>We Can Help.</h1><p class="text-xs text-gray-600 max-w-[200px] mb-4">24/7 Emergency service for water, fire, and mold restoration.</p><div class="px-4 py-2 bg-blue-600 text-white text-[10px] font-bold inline-block rounded">Get a Quote</div></div>
+                                </div>
+                                <div class="chat-bubble absolute bottom-4 right-4 w-12 h-12 bg-blue-600 rounded-full shadow-xl flex items-center justify-center text-white z-20 cursor-pointer transform transition-transform hover:scale-110"><i class="fa-solid fa-comment-dots text-xl"></i></div>
+                                <div class="chat-window absolute bottom-4 right-4 w-56 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-30 origin-bottom-right transform scale-0">
+                                    <div class="bg-blue-600 p-3 flex items-center gap-2"><div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div><span class="text-white text-xs font-bold">Chat with Us</span></div>
+                                    <!-- Added inner scroll wrapper for messages -->
+                                    <div class="h-40 bg-gray-50 p-3 flex flex-col gap-3 overflow-hidden relative">
+                                        <div class="chat-scroll-wrapper w-full flex flex-col gap-3">
+                                            <div class="msg-1 self-end bg-blue-600 text-white text-xs p-2 rounded-l-lg rounded-tr-lg max-w-[90%] opacity-0 leading-tight">Hi, I'd like to schedule an estimate.</div>
+                                            <div class="msg-2 self-start bg-gray-200 text-gray-800 text-xs p-2 rounded-r-lg rounded-tl-lg max-w-[90%] opacity-0 leading-tight">Hello! I can certainly help with that. When is the best time for us to come out?</div>
+                                            <div class="msg-3 self-end bg-blue-600 text-white text-xs p-2 rounded-l-lg rounded-tr-lg max-w-[90%] opacity-0 leading-tight">Tomorrow at 12 o'clock.</div>
+                                            <div class="msg-4 self-start bg-gray-200 text-gray-800 text-xs p-2 rounded-r-lg rounded-tl-lg max-w-[90%] opacity-0 leading-tight">Perfect. We will be there tomorrow at 12:00 PM.</div>
+                                            <div class="typing-indicator text-[10px] text-gray-400 ml-1 opacity-0">AI is typing...</div>
+                                        </div>
+                                    </div>
+                                    <div class="p-2 border-t border-gray-100 bg-white"><div class="h-8 bg-gray-100 rounded px-2 flex items-center"><span class="text-[10px] text-gray-400">Type a message...</span></div></div>
+                                </div>
+                                <div class="mouse-cursor absolute top-1/2 left-1/2 w-4 h-4 pointer-events-none z-50 opacity-0"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full drop-shadow-md"><path d="M3 3L10.07 19.97L12.58 12.58L19.97 10.07L3 3Z" fill="white" stroke="black" stroke-width="2" stroke-linejoin="round"/></svg></div>
+                            </div>
+                        </div>
+                        <div class="h-3 bg-gray-800 rounded-b-xl mx-auto w-full shadow-md border-t border-gray-700 relative"><div class="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gray-700 rounded-b-md"></div></div>
+                        <div class="absolute -bottom-2 left-4 right-4 h-2 bg-black/40 blur-md rounded-full"></div>
+                    </div>
+                    
+                    <style>
+                        /* Chat Animation Sequence */
+                        .play-chat .mouse-cursor { animation: cursorAction 2s ease-in-out forwards; }
+                        .play-chat .chat-bubble { animation: bubblePop 0.2s forwards 1.5s; }
+                        .play-chat .chat-window { animation: windowOpen 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 1.6s; }
+                        
+                        /* Chat Scroll Animation triggered on later messages */
+                        .play-chat .chat-scroll-wrapper {
+                            animation: chatScrollUp 2s ease-out forwards 4.5s;
+                        }
+
+                        .play-chat .msg-1 { animation: msgFadeIn 0.5s forwards 2.2s; }
+                        .play-chat .msg-2 { animation: msgFadeIn 0.5s forwards 3.5s; }
+                        .play-chat .msg-3 { animation: msgFadeIn 0.5s forwards 5.0s; }
+                        .play-chat .msg-4 { animation: msgFadeIn 0.5s forwards 6.5s; }
+
+                        @keyframes chatScrollUp {
+                            0% { transform: translateY(0); }
+                            30% { transform: translateY(-30px); } /* Slightly deeper scroll for middle message */
+                            100% { transform: translateY(-100px); } /* Increased from -60px to -100px to fully reveal bottom message */
+                        }
+
+                        @keyframes cursorAction {
+                            0% { opacity: 1; top: 20%; left: 20%; }
+                            60% { top: 85%; left: 90%; transform: scale(1); }
+                            70% { transform: scale(0.8); }
+                            80% { transform: scale(1); }
+                            100% { top: 85%; left: 90%; opacity: 0; }
+                        }
+                        @keyframes bubblePop { to { transform: scale(0); opacity: 0; } }
+                        @keyframes windowOpen { to { transform: scale(1); } }
+                        @keyframes msgFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                    </style>
+                </div>
+
+                <!-- Content Right -->
+                <div class="order-2">
+                    <div class="inline-block px-3 py-1 mb-4 border border-green-500/30 rounded-lg bg-green-500/10"><span class="text-green-400 font-bold tracking-wider uppercase text-xs">Chat Widget</span></div>
+                    <h2 class="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4">Capture Website Leads</h2>
+                    <p class="text-green-400 text-base md:text-lg font-semibold mb-8">Answers questions and collects info 24/7.</p>
+                    <div class="space-y-4 md:space-y-6">
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-mid border border-green-500 flex items-center justify-center text-green-400 mt-1"><i class="fa-solid fa-bolt text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Fast Answers</h4><p class="text-slate-400 text-sm">Helps customers so they don’t bounce.</p></div></div>
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-mid border border-green-500 flex items-center justify-center text-green-400 mt-1"><i class="fa-solid fa-address-card text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Grabs Lead Info</h4><p class="text-slate-400 text-sm">Gets name, phone, and job details.</p></div></div>
+                        <div class="flex gap-4"><div class="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-mid border border-green-500 flex items-center justify-center text-green-400 mt-1"><i class="fa-solid fa-database text-sm md:text-base"></i></div><div><h4 class="text-white font-bold text-base md:text-lg">Sends Leads to CRM</h4><p class="text-slate-400 text-sm">New contacts show up instantly.</p></div></div>
+                    </div>
+                    <!-- NEW: "See Demo" Button for Chat Widget -->
+                    <button class="see-demo-btn mt-8 px-8 py-3 bg-green-500 text-brand-dark font-bold rounded-xl shadow-[0_0_15px_rgba(34,197,94,0.4)] hover:bg-green-400 hover:shadow-[0_0_20px_rgba(34,197,94,0.6)] transition-all flex items-center gap-2 group" data-section="chat">
+                        <i class="fa-solid fa-play-circle text-xl group-hover:scale-110 transition-transform"></i>
+                        See Demo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. BUILT FOR RESTORATION (Keep existing) -->
+    <section class="py-12 md:py-24 bg-brand-dark relative">
+        <div class="absolute inset-0 bg-circuit opacity-20"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center max-w-4xl mx-auto mb-10 md:mb-16">
+                <span class="text-brand-neon font-bold tracking-widest uppercase text-sm mb-4 block">Built for One Industry</span>
+                <h2 class="text-2xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 md:mb-8">We Build Systems Only for <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-brand-neon">Restoration Companies</span></h2>
+                <div class="p-6 md:p-8 bg-brand-card/50 border border-slate-700 rounded-2xl backdrop-blur-sm"><p class="text-slate-300 text-base md:text-xl font-light leading-relaxed">We are the only active AI company made ONLY for restoration. Other AI tools try to work for everyone. Ours is built for water damage, fire, mold, and sewage. Your AI knows the terms, questions, and workflows.</p></div>
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                <div class="glass-card p-4 md:p-8 rounded-xl hover:border-brand-accent/50 transition-all hover:-translate-y-2 group"><i class="fa-solid fa-droplet text-2xl md:text-3xl text-blue-400 mb-3 md:mb-4 group-hover:animate-bounce"></i><h3 class="text-base md:text-xl font-bold text-white mb-1 md:mb-2">Water Damage</h3><p class="text-xs md:text-sm text-slate-400">Knows categories and classes.</p></div>
+                <div class="glass-card p-4 md:p-8 rounded-xl hover:border-orange-500/50 transition-all hover:-translate-y-2 group"><i class="fa-solid fa-fire text-2xl md:text-3xl text-orange-500 mb-3 md:mb-4 group-hover:animate-pulse"></i><h3 class="text-base md:text-xl font-bold text-white mb-1 md:mb-2">Fire Restoration</h3><p class="text-xs md:text-sm text-slate-400">Understands soot and smoke.</p></div>
+                <div class="glass-card p-4 md:p-8 rounded-xl hover:border-green-500/50 transition-all hover:-translate-y-2 group"><i class="fa-solid fa-biohazard text-2xl md:text-3xl text-green-500 mb-3 md:mb-4 group-hover:spin-slow"></i><h3 class="text-base md:text-xl font-bold text-white mb-1 md:mb-2">Mold</h3><p class="text-xs md:text-sm text-slate-400">Handles containment info.</p></div>
+                <div class="glass-card p-4 md:p-8 rounded-xl hover:border-brand-neon/50 transition-all hover:-translate-y-2 group"><i class="fa-solid fa-truck-fast text-2xl md:text-3xl text-brand-neon mb-3 md:mb-4 group-hover:translate-x-2 transition-transform"></i><h3 class="text-base md:text-xl font-bold text-white mb-1 md:mb-2">Faster Dispatch</h3><p class="text-xs md:text-sm text-slate-400">Gets crews there faster.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 3-STEP PROCESS -->
+    <section class="py-12 md:py-24 bg-brand-mid text-white relative">
+         <div class="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-brand-accent to-transparent opacity-30"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-10 md:mb-16"><h2 class="text-3xl md:text-4xl font-bold">How to Get Started</h2></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                <div class="flex flex-col items-center text-center group"><div class="w-16 h-16 md:w-24 md:h-24 bg-brand-card border-2 border-brand-accent shadow-glow-sm rounded-full flex items-center justify-center text-2xl md:text-3xl font-bold text-brand-neon mb-4 md:mb-6 z-10 group-hover:scale-110 transition-transform duration-300">1</div><h3 class="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-white">Book a Demo Call</h3><p class="text-slate-400 text-sm md:text-base leading-relaxed max-w-xs">See the system, ask questions, and sign up.</p></div>
+                <div class="flex flex-col items-center text-center group"><div class="w-16 h-16 md:w-24 md:h-24 bg-brand-card border-2 border-brand-accent shadow-glow-sm rounded-full flex items-center justify-center text-2xl md:text-3xl font-bold text-brand-neon mb-4 md:mb-6 z-10 group-hover:scale-110 transition-transform duration-300">2</div><h3 class="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-white">Onboarding</h3><p class="text-slate-400 text-sm md:text-base leading-relaxed max-w-xs">Fill out a 5–10 minute form. We set up in 2–3 days.</p></div>
+                <div class="flex flex-col items-center text-center group"><div class="w-16 h-16 md:w-24 md:h-24 bg-brand-card border-2 border-brand-neon shadow-neon rounded-full flex items-center justify-center text-2xl md:text-3xl font-bold text-brand-neon mb-4 md:mb-6 z-10 group-hover:scale-110 transition-transform duration-300">3</div><h3 class="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-white">Go Live</h3><p class="text-slate-400 text-sm md:text-base leading-relaxed max-w-xs">Turn on your agent and never miss a call.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. UNIQUE GRID -->
+    <section class="py-12 md:py-24 bg-brand-dark">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-10 md:mb-16"><h2 class="text-2xl md:text-5xl font-bold text-white">Why We’re Unique… <br><span class="text-slate-500 font-normal text-lg md:text-3xl">Just Like Everyone Else, Right?</span></h2></div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                <div class="bg-brand-card p-4 md:p-8 rounded-xl border border-slate-800 hover:border-brand-neon/50 hover:shadow-glow-sm transition-all duration-300"><div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-brand-accent/10 flex items-center justify-center text-brand-accent mb-4 md:mb-6"><i class="fa-solid fa-signature text-lg md:text-xl"></i></div><h3 class="text-base md:text-xl font-bold text-white mb-1 md:mb-2">Easy Sign Up</h3><p class="text-xs md:text-sm text-slate-400">Start fast, save time.</p></div>
+                <div class="bg-brand-card p-4 md:p-8 rounded-xl border border-slate-800 hover:border-brand-neon/50 hover:shadow-glow-sm transition-all duration-300"><div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-brand-accent/10 flex items-center justify-center text-brand-accent mb-4 md:mb-6"><i class="fa-solid fa-door-open text-lg md:text-xl"></i></div><h3 class="text-base md:text-xl font-bold text-white mb-1 md:mb-2">Easy to Cancel</h3><p class="text-xs md:text-sm text-slate-400">No contracts.</p></div>
+                <div class="bg-brand-card p-4 md:p-8 rounded-xl border border-slate-800 hover:border-brand-neon/50 hover:shadow-glow-sm transition-all duration-300"><div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-brand-accent/10 flex items-center justify-center text-brand-accent mb-4 md:mb-6"><i class="fa-solid fa-piggy-bank text-lg md:text-xl"></i></div><h3 class="text-base md:text-xl font-bold text-white mb-1 md:mb-2">Affordable</h3><p class="text-xs md:text-sm text-slate-400">Pays for itself fast.</p></div>
+                <div class="bg-brand-card p-4 md:p-8 rounded-xl border border-slate-800 hover:border-brand-neon/50 hover:shadow-glow-sm transition-all duration-300"><div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-brand-accent/10 flex items-center justify-center text-brand-accent mb-4 md:mb-6"><i class="fa-solid fa-robot text-lg md:text-xl"></i></div><h3 class="text-base md:text-xl font-bold text-white mb-1 md:mb-2">Hands-Free</h3><p class="text-xs md:text-sm text-slate-400">Gets jobs on its own.</p></div>
+                <div class="bg-brand-card p-4 md:p-8 rounded-xl border border-slate-800 hover:border-brand-neon/50 hover:shadow-glow-sm transition-all duration-300"><div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-brand-accent/10 flex items-center justify-center text-brand-accent mb-4 md:mb-6"><i class="fa-solid fa-ban text-lg md:text-xl"></i></div><h3 class="text-base md:text-xl font-bold text-white mb-1 md:mb-2">No Bullshit</h3><p class="text-xs md:text-sm text-slate-400">Clear and simple.</p></div>
+                <div class="bg-brand-card p-4 md:p-8 rounded-xl border border-slate-800 hover:border-brand-neon/50 hover:shadow-glow-sm transition-all duration-300"><div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-brand-accent/10 flex items-center justify-center text-brand-accent mb-4 md:mb-6"><i class="fa-solid fa-arrow-trend-up text-lg md:text-xl"></i></div><h3 class="text-base md:text-xl font-bold text-white mb-1 md:mb-2">Always Improving</h3><p class="text-xs md:text-sm text-slate-400">Smarter every week.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. FAQ -->
+    <section class="py-12 md:py-24 bg-brand-mid border-t border-slate-800">
+        <div class="container mx-auto px-6 max-w-3xl">
+            <div class="text-center mb-10 md:mb-12"><h2 class="text-2xl md:text-4xl font-bold text-white">Frequently Asked Questions</h2></div>
+            <div class="space-y-4">
+                <details class="group bg-brand-card border border-slate-700 rounded-xl overflow-hidden shadow-sm open:border-brand-accent/50 open:shadow-glow-sm transition-all"><summary class="flex justify-between items-center p-4 md:p-6 cursor-pointer font-bold text-base md:text-lg text-slate-200 group-hover:text-brand-neon transition-colors">Does the AI sound real?<span class="text-brand-accent group-open:rotate-180 transition-transform duration-300"><i class="fa-solid fa-chevron-down"></i></span></summary><div class="px-4 md:px-6 pb-4 md:pb-6 text-slate-400 leading-relaxed text-sm md:text-base">Yes. The voice sounds natural. Most callers think it’s a real person. You can try it using the demo number.</div></details>
+                <details class="group bg-brand-card border border-slate-700 rounded-xl overflow-hidden shadow-sm open:border-brand-accent/50 open:shadow-glow-sm transition-all"><summary class="flex justify-between items-center p-4 md:p-6 cursor-pointer font-bold text-base md:text-lg text-slate-200 group-hover:text-brand-neon transition-colors">Is this a lot of work to set up?<span class="text-brand-accent group-open:rotate-180 transition-transform duration-300"><i class="fa-solid fa-chevron-down"></i></span></summary><div class="px-4 md:px-6 pb-4 md:pb-6 text-slate-400 leading-relaxed text-sm md:text-base">No. We do everything for you. You only fill out one short form.</div></details>
+                <details class="group bg-brand-card border border-slate-700 rounded-xl overflow-hidden shadow-sm open:border-brand-accent/50 open:shadow-glow-sm transition-all"><summary class="flex justify-between items-center p-4 md:p-6 cursor-pointer font-bold text-base md:text-lg text-slate-200 group-hover:text-brand-neon transition-colors">Does this replace my office staff?<span class="text-brand-accent group-open:rotate-180 transition-transform duration-300"><i class="fa-solid fa-chevron-down"></i></span></summary><div class="px-4 md:px-6 pb-4 md:pb-6 text-slate-400 leading-relaxed text-sm md:text-base">No. It helps them. It answers calls and gets basic details so your staff can focus on real work.</div></details>
+                <details class="group bg-brand-card border border-slate-700 rounded-xl overflow-hidden shadow-sm open:border-brand-accent/50 open:shadow-glow-sm transition-all"><summary class="flex justify-between items-center p-4 md:p-6 cursor-pointer font-bold text-base md:text-lg text-slate-200 group-hover:text-brand-neon transition-colors">What if someone has a hard question?<span class="text-brand-accent group-open:rotate-180 transition-transform duration-300"><i class="fa-solid fa-chevron-down"></i></span></summary><div class="px-4 md:px-6 pb-4 md:pb-6 text-slate-400 leading-relaxed text-sm md:text-base">The AI can send the call to you or a team member right away.</div></details>
+                <details class="group bg-brand-card border border-slate-700 rounded-xl overflow-hidden shadow-sm open:border-brand-accent/50 open:shadow-glow-sm transition-all"><summary class="flex justify-between items-center p-4 md:p-6 cursor-pointer font-bold text-base md:text-lg text-slate-200 group-hover:text-brand-neon transition-colors">How is this better than an answering service?<span class="text-brand-accent group-open:rotate-180 transition-transform duration-300"><i class="fa-solid fa-chevron-down"></i></span></summary><div class="px-4 md:px-6 pb-4 md:pb-6 text-slate-400 leading-relaxed text-sm md:text-base">Answering services only take messages. Our AI gets job details, books appointments, and sends everything to your CRM.</div></details>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. CTA -->
+    <section id="cta-section" class="py-12 md:py-24 bg-gradient-to-b from-brand-dark to-black text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-circuit opacity-30"></div>
+        <div class="absolute bottom-0 left-0 w-full h-64 bg-brand-accent/10 blur-[100px]"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                <div class="text-center md:text-left">
+                    <h2 class="text-3xl md:text-6xl font-bold mb-4 md:mb-6">Want to Schedule <br> a Time to Talk?</h2>
+                    <p class="text-lg md:text-xl text-slate-300 mb-6 md:mb-8 font-light">Pick a time that works best for you. Quick and simple.</p>
+                    <div class="flex flex-col sm:flex-row gap-6 items-center md:items-start justify-center md:justify-start">
+                        <a href="#" class="px-10 py-4 md:py-5 bg-brand-neon text-brand-dark font-extrabold rounded-xl shadow-neon hover:shadow-[0_0_30px_#00e1ff] transition-all transform hover:-translate-y-1 w-full sm:w-auto text-center inline-block">Book a Call</a>
+                    </div>
+                </div>
+                <div class="flex justify-center md:justify-end mt-4 md:mt-0">
+                    <div class="relative group">
+                        <div class="absolute -inset-0.5 bg-gradient-to-r from-brand-neon to-blue-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
+                        <div class="relative w-64 h-72 md:w-72 md:h-80 bg-brand-card border border-slate-700 rounded-2xl flex flex-col items-center justify-center text-slate-500 p-6 text-center">
+                            <i class="fa-solid fa-user-astronaut text-5xl md:text-6xl mb-4 text-white animate-float"></i>
+                            <span class="font-bold uppercase tracking-widest text-xs md:text-sm text-brand-accent">Founder / Team Photo</span>
+                            <span class="text-xs mt-2 text-slate-500">Upload Image Here</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VIDEO DEMO MODAL (Hidden by default) -->
+    <div id="demo-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <!-- Modal Overlay -->
+        <div class="modal-overlay absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+        
+        <!-- Modal Content -->
+        <div class="modal-content relative w-full max-w-4xl bg-brand-card rounded-2xl border-2 border-transparent shadow-2xl transform scale-95 transition-transform duration-300 overflow-hidden p-1">
+            <div class="bg-brand-dark/95 p-6 md:p-8 rounded-xl relative">
+                <!-- Close Button -->
+                <button class="modal-close absolute top-4 right-4 w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors z-10">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+                
+                <!-- Headline -->
+                <h2 id="modal-headline" class="text-2xl md:text-4xl font-extrabold text-white mb-6 text-center leading-tight">
+                    See How It Works
+                </h2>
+                
+                <!-- Video Placeholder Area -->
+                <div class="relative w-full aspect-video bg-slate-900 rounded-xl overflow-hidden border border-slate-700 shadow-inner flex items-center justify-center group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-brand-dark/50 to-transparent z-0"></div>
+                    <!-- Placeholder for future video upload -->
+                    <div class="text-center relative z-10 p-8">
+                        <div class="w-20 h-20 bg-brand-accent/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fa-solid fa-play text-4xl text-brand-neon ml-2"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Video Coming Soon!</h3>
+                        <p class="text-slate-400 text-sm">We're putting the finishing touches on this demo video.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Link to external CSS and JS -->
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Modal Functionality ---
+            const modal = document.getElementById('demo-modal');
+            const modalContent = modal.querySelector('.modal-content');
+            const modalHeadline = document.getElementById('modal-headline');
+            const closeButton = modal.querySelector('.modal-close');
+            const modalOverlay = modal.querySelector('.modal-overlay');
+            const demoButtons = document.querySelectorAll('.see-demo-btn');
+
+            // Section-specific data for the modal
+            const sectionData = {
+                'phone': { headline: "AI Agent And <br><span class='text-brand-neon'>Dispatch System</span>", glowClass: 'modal-glow-phone' },
+                'crm': { headline: "The Perfect CRM <br><span class='text-brand-purple'>For Restoration</span>", glowClass: 'modal-glow-crm' },
+                'reviews': { headline: "Discover How to Get <br><span class='text-yellow-400'>More 5-Star Reviews</span> Automatically", glowClass: 'modal-glow-reviews' },
+                'chat': { headline: "See the Chat Widget <br><span class='text-green-400'>Capture Leads 24/7</span>", glowClass: 'modal-glow-chat' }
+            };
+
+            // Function to open the modal
+            const openModal = (section) => {
+                const data = sectionData[section];
+                if (!data) return;
+
+                // Update headline
+                modalHeadline.innerHTML = data.headline;
+
+                // Update glowing border class
+                modalContent.classList.remove('modal-glow-phone', 'modal-glow-crm', 'modal-glow-reviews', 'modal-glow-chat');
+                modalContent.classList.add(data.glowClass);
+
+                // Show modal
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.classList.add('is-open');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            };
+
+            // Function to close the modal
+            const closeModal = () => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modal.classList.remove('is-open');
+                document.body.style.overflow = ''; // Restore background scrolling
+            };
+
+            // Add click event listeners to "See Demo" buttons
+            demoButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const section = button.getAttribute('data-section');
+                    openModal(section);
+                });
+            });
+
+            // Add click event listeners to close button and overlay
+            closeButton.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', closeModal);
+
+            // Close modal on Escape key press
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+                    closeModal();
+                }
+            });
+
+
+            // --- Existing Scroll Animation and Observer Logic ---
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.2
+            };
+
+            // Helper: Number Counter Animation
+            const animateValue = (obj, start, end, duration, isFloat = false) => {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const val = progress * (end - start) + start;
+                    obj.innerHTML = isFloat ? val.toFixed(1) : Math.floor(val);
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    } else {
+                        obj.innerHTML = isFloat ? end.toFixed(1) : end;
+                    }
+                };
+                window.requestAnimationFrame(step);
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const target = entry.target;
+                    const isVisible = entry.isIntersecting;
+
+                    if (isVisible) {
+                        // --- Generic Laptop Scroll Reveal ---
+                        if (target.classList.contains('scroll-trigger')) {
+                            target.classList.remove('opacity-0', 'translate-y-10');
+                            
+                            // Specific Logic: Hero Graph
+                            if (target.id === 'hero-graph') {
+                                target.classList.add('play-graph');
+                                const counter = target.querySelector('.revenue-counter');
+                                if(counter) {
+                                    counter.innerText = '$0';
+                                    setTimeout(() => animateValue(counter, 0, 138500, 2000), 100);
+                                }
+                            }
+
+                            // Specific Logic: Laptop Notifications (CRM)
+                            const appointment = target.querySelector('.notification-trigger');
+                            const toast = target.querySelector('.notification-toast');
+                            if (appointment) {
+                                setTimeout(() => {
+                                    appointment.classList.remove('opacity-0');
+                                    appointment.classList.add('scale-105');
+                                    setTimeout(() => appointment.classList.remove('scale-105'), 200);
+                                }, 1000);
+                            }
+                            if (toast) {
+                                setTimeout(() => {
+                                    toast.classList.remove('opacity-0', 'translate-y-4');
+                                }, 1500);
+                            }
+                        } 
+                        
+                        // CRM Logic - FIXED: Added proper reveal
+                        else if (target.id === 'crm-ui') {
+                            target.classList.remove('opacity-0', 'translate-y-10');
+                            target.classList.add('play-crm');
+                        }
+
+                        // --- Phone UI Trigger ---
+                        else if (target.id === 'phone-ui') {
+                            target.classList.add('play-animation');
+                            target.classList.remove('opacity-0', 'translate-y-10');
+                        } 
+                        // --- Review UI Trigger ---
+                        else if (target.id === 'review-ui') {
+                            target.classList.remove('opacity-0', 'translate-y-10');
+                            setTimeout(() => {
+                                target.classList.add('play-ranking');
+                                const countEl = target.querySelector('.review-count');
+                                const ratingEl = target.querySelector('.rating-val');
+                                const rankNum = target.querySelector('.rank-number');
+                                const starsContainer = target.querySelector('.stars-container');
+                                
+                                if (countEl) { countEl.innerHTML = '(12)'; setTimeout(() => animateValue(countEl, 12, 148, 1500), 500); }
+                                if (ratingEl) { ratingEl.innerHTML = '4.2'; setTimeout(() => animateValue(ratingEl, 4.2, 5.0, 1500, true), 500); }
+                                if (rankNum) { setTimeout(() => rankNum.innerHTML = "1.", 1000); }
+                                if (starsContainer) { setTimeout(() => starsContainer.innerHTML = '<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>', 1000); }
+                            }, 500);
+                        } 
+                        // --- Chat UI Trigger ---
+                        else if (target.id === 'chat-ui') {
+                            target.classList.remove('opacity-0', 'translate-y-10');
+                            target.classList.add('play-chat');
+                        }
+
+                    } else {
+                        // --- RESET ANIMATIONS ON SCROLL AWAY ---
+                        if (target.classList.contains('scroll-trigger') && target.id !== 'crm-ui') {
+                            target.classList.add('opacity-0', 'translate-y-10');
+                            
+                            if (target.id === 'hero-graph') {
+                                target.classList.remove('play-graph');
+                                const counter = target.querySelector('.revenue-counter');
+                                if(counter) counter.innerText = '$0';
+                            }
+
+                            const appointment = target.querySelector('.notification-trigger');
+                            const toast = target.querySelector('.notification-toast');
+                            if (appointment) appointment.classList.add('opacity-0');
+                            if (toast) toast.classList.add('opacity-0', 'translate-y-4');
+                        } 
+                        
+                        if (target.id === 'crm-ui') {
+                            target.classList.add('opacity-0', 'translate-y-10');
+                            target.classList.remove('play-crm');
+                        }
+                        else if (target.id === 'phone-ui') {
+                            target.classList.remove('play-animation');
+                            target.classList.add('opacity-0', 'translate-y-10');
+                        } 
+                        else if (target.id === 'review-ui') {
+                            target.classList.add('opacity-0', 'translate-y-10');
+                            target.classList.remove('play-ranking');
+                            const countEl = target.querySelector('.review-count');
+                            const ratingEl = target.querySelector('.rating-val');
+                            const rankNum = target.querySelector('.rank-number');
+                            const starsContainer = target.querySelector('.stars-container');
+                            if(countEl) countEl.innerHTML = '(12)';
+                            if(ratingEl) ratingEl.innerHTML = '4.2';
+                            if(rankNum) rankNum.innerHTML = '3.';
+                            if(starsContainer) starsContainer.innerHTML = '<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>';
+                        } 
+                        else if (target.id === 'chat-ui') {
+                            target.classList.add('opacity-0', 'translate-y-10');
+                            target.classList.remove('play-chat');
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.scroll-trigger').forEach(el => observer.observe(el));
+            ['phone-ui', 'review-ui', 'chat-ui', 'crm-ui'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
